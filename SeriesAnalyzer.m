@@ -22,7 +22,7 @@ function varargout = SeriesAnalyzer(varargin)
 
 % Edit the above text to modify the response to help SeriesAnalyzer
 
-% Last Modified by GUIDE v2.5 06-Oct-2013 23:06:36
+% Last Modified by GUIDE v2.5 14-Oct-2013 02:08:12
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -97,14 +97,19 @@ function menuItem_Save_Callback(hObject, eventdata, handles)
 % hObject    handle to menuItem_Save (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+data = handles.ResultSeries;
+coords = (1:length(data))';
+[filename pathname] = uiputfile('*.txt');
+dlmwrite(strcat(pathname,filename),[coords data], '\t');
 
 % --------------------------------------------------------------------
 function menuItem_Reset_Callback(hObject, eventdata, handles)
 % hObject    handle to menuItem_Reset (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+handles.ResultSeries = handles.SourceSeries;
+guidata(hObject, handles);
+updateWindow(handles);
 
 %---------------------------------------------------------------------
 function updateWindow(handles)
@@ -113,3 +118,40 @@ plot(handles.SourceSeries);
 
 axes(handles.ResultCanvas);
 plot(handles.ResultSeries);
+
+
+% --------------------------------------------------------------------
+function menu_Analysis_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_Analysis (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuItem_SSA_Callback(hObject, eventdata, handles)
+% hObject    handle to menuItem_SSA (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.ResultSeries = runSSA(handles.ResultSeries);
+guidata(hObject, handles);
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuItem_Chebyshev_Callback(hObject, eventdata, handles)
+% hObject    handle to menuItem_Chebyshev (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.ResultSeries = runChebyshev(handles.ResultSeries);
+guidata(hObject, handles);
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menuItem_WaveletProcessing_Callback(hObject, eventdata, handles)
+% hObject    handle to menuItem_WaveletProcessing (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.ResultSeries = runWaveletProcessing(handles.ResultSeries);
+guidata(hObject,handles);
+updateWindow(handles);
