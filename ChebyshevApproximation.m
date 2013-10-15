@@ -2,15 +2,20 @@ function [output] = ChebyshevApproximation(input, max_pow)
 %ChebyshevApproximation Approximation with help discret Chebyshev
 %orthogonal polinoms
 %input-временной ряд, l -максимальная степень полинома чебышева, graph - строить ли график
-n = size(input, 2);   % количество точек ряда
+n = length(input);   % количество точек ряда
+
+output = zeros(size(input));
 
 if(n < max_pow)
     output = input;
     return;
 end
-%K = zeros(1, max_pow + 1);  % массив коэффициентов при разложении
 
-Cheb = zeros(1,n);  % Формируем систему полиномов Чебышева
+if (size(input,1) > size(input,2))
+    input = input';
+end
+
+Cheb = zeros(max_pow+1,n);  % Формируем систему полиномов Чебышева
 %Cheb1 = zeros(1,n);  % Формируем систему полиномов Чебышева
 
 Cheb(1,:) = 1; % полином 0-го порядка
@@ -20,9 +25,9 @@ Cheb(1,:) = 1; % полином 0-го порядка
 %     Cheb(2,i)=i-(n+1)/2;  % полином 1-го порядка
 % end
 
-for i =1:1:n  
+for i=1:n  
    Cheb(2,i)=i-(n+1)/2;  % полином 1-го порядка 
-   for j = 3:1:max_pow + 1
+   for j = 3:max_pow + 1
       p = j-2;
       Cheb(j,i)= Cheb(2,i)*Cheb(j-1,i)-((p*p*n*n-p*p*p*p)/(16*p*p-4))*Cheb(j-2,i);  % остальные полиномы
      % p = j-1;
@@ -46,22 +51,14 @@ end
 
 
 K=zeros(1, max_pow + 1);  % Коэффициенты в разложении
-for j=1:l+1
+for j=1:max_pow+1
     K(j)=sum(input.*Cheb(j,:))/sum(Cheb(j,:).^2);
 end
 
-output = zeros(1,n);
+
 
 for i=1:n
-    for j=1:1:max_pow + 1
+    for j=1:max_pow + 1
         output(i)=output(i)+K(j)*Cheb(j, i);
     end
 end
-
-%if (graph==1)
-%   plot(1:n,input(1,:),1:n,F(1,:)) 
-%   set(gca,'FontName','Arial Cyr');
-%   title('Распределение количества мюонов','FontSize',14)
-%   xlabel('Минуты'); 
-%   ylabel('Количество мюонов');
-%end

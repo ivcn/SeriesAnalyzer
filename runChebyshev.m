@@ -54,12 +54,12 @@ function runChebyshev_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for runChebyshev
 handles.output = hObject;
-handles.outer_handles = varargin{1};
+handles.series = varargin{1};
 % Update handles structure
 guidata(hObject, handles);
 
 % UIWAIT makes runChebyshev wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
@@ -70,7 +70,7 @@ function varargout = runChebyshev_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = handles.series;
 delete(handles.figure1);
 
 
@@ -108,10 +108,12 @@ function buttonResults_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonResults (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-series = handles.outer_handles.ResultSeries;
-trend = ChebyshevApproximation(series, str2double(get(handles.edit1, 'String')));
+trend = ChebyshevApproximation(handles.series, str2double(get(handles.edit1, 'String')));
 figure();
-plot(1:length(trend), series, 1:length(series), trend); 
+plot(1:length(handles.series), handles.series, 'k'); 
+hold on;
+plot(1:length(trend), trend, 'g','LineWidth',2);
+hold off;
 set(gca,'FontName','Arial Cyr');
 title('Результаты расчета тренда','FontSize',12);
 
@@ -121,9 +123,8 @@ function buttonDeleteTrend_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonDeleteTrend (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-series = handles.outer_handles.ResultSeries;
-trend = ChebyshevApproximation(series, str2double(get(handles.edit1, 'String')));
-handles.output = series - trend;
+trend = ChebyshevApproximation(handles.series, str2double(get(handles.edit1, 'String')));
+handles.series = handles.series - trend;
 guidata(hObject, handles);
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles);
 
@@ -132,7 +133,8 @@ function buttonDeleteNoise_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonDeleteNoise (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.output = trend;
+trend = ChebyshevApproximation(handles.series, str2double(get(handles.edit1, 'String')));
+handles.series = trend;
 guidata(hObject, handles);
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles);
 

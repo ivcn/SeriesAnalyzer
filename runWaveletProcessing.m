@@ -22,7 +22,7 @@ function varargout = runWaveletProcessing(varargin)
 
 % Edit the above text to modify the response to help runWaveletProcessing
 
-% Last Modified by GUIDE v2.5 14-Oct-2013 02:06:32
+% Last Modified by GUIDE v2.5 16-Oct-2013 02:18:50
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -54,7 +54,8 @@ function runWaveletProcessing_OpeningFcn(hObject, eventdata, handles, varargin)
 
 % Choose default command line output for runWaveletProcessing
 handles.output = hObject;
-handles.outer_handles = varargin{1};
+handles.series = varargin{1};
+handles.originalSeries = handles.series;
 % Update handles structure
 guidata(hObject, handles);
 
@@ -78,7 +79,7 @@ function buttonApplyChanges_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonApplyChanges (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-handles.output = handles.ResultSeries;
+handles.output = handles.series;
 guidata(hObject, handles);
 figure1_CloseRequestFcn(handles.figure1, eventdata, handles);
 
@@ -133,7 +134,12 @@ function buttonApplyFilter_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonApplyFilter (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+popupContent = cellstr(get(handles.popupFilter,'String'));
+popupNum = get(handles.popupWaveletName,'Value');
+waveletName=popupContent{popupNum};
+decompositionLevel = str2double(get(handles.editDecompositionLevel,'String'));
+alpha = str2double(get(handles.editAlpha,'String'));
+hardThreshold = get(handles.checkboxThresold,'Value');
 
 % --- Executes on selection change in popupWaveletName.
 function popupWaveletName_Callback(hObject, eventdata, handles)
@@ -232,7 +238,24 @@ function buttonCalculateEnergy_Callback(hObject, eventdata, handles)
 % hObject    handle to buttonCalculateEnergy (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
-
+popupContent = cellstr(get(handles.popupWaveletName,'String'));
+popupNum = get(handles.popupWaveletName,'Value');
+wavelet=popupContent{popupNum};
+firstScale = str2double(get(handles.editFirstScale, 'String'));
+lastScale = str2Double(get(handles.editLastScale, 'String'));
+windowSize = str2double(get(handles.editSlidingWindow, 'String'));
+[energy scalogram] = WaveletEnergy(handles.series,...
+                                   wavelet,...
+                                   firstScale,...
+                                   lastScale,...
+                                   windowSize);
+figure();
+subplot(211);
+imagesc(scalogram);
+subplot(212);
+plot(1:length(energy), energy, 'k');
+handles.series = energy;
+guidata(hObject, handles);
 
 % --- Executes when user attempts to close figure1.
 function figure1_CloseRequestFcn(hObject, eventdata, handles)
@@ -246,3 +269,44 @@ if isequal(get(hObject, 'waitstatus'), 'waiting')
 else
     delete(hObject);
 end
+
+
+% --- Executes on button press in buttonReset.
+function buttonReset_Callback(hObject, eventdata, handles)
+% hObject    handle to buttonReset (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.series = handles.originalSeries;
+guidata(hObject, handles);
+
+
+
+function editAlpha_Callback(hObject, eventdata, handles)
+% hObject    handle to editAlpha (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hints: get(hObject,'String') returns contents of editAlpha as text
+%        str2double(get(hObject,'String')) returns contents of editAlpha as a double
+
+
+% --- Executes during object creation, after setting all properties.
+function editAlpha_CreateFcn(hObject, eventdata, handles)
+% hObject    handle to editAlpha (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    empty - handles not created until after all CreateFcns called
+
+% Hint: edit controls usually have a white background on Windows.
+%       See ISPC and COMPUTER.
+if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+    set(hObject,'BackgroundColor','white');
+end
+
+
+% --- Executes on button press in checkboxThreshold.
+function checkboxThreshold_Callback(hObject, eventdata, handles)
+% hObject    handle to checkboxThreshold (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+% Hint: get(hObject,'Value') returns toggle state of checkboxThreshold
