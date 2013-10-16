@@ -22,7 +22,7 @@ function varargout = SeriesAnalyzer(varargin)
 
 % Edit the above text to modify the response to help SeriesAnalyzer
 
-% Last Modified by GUIDE v2.5 14-Oct-2013 02:08:12
+% Last Modified by GUIDE v2.5 17-Oct-2013 02:13:06
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
@@ -153,5 +153,29 @@ function menuItem_WaveletProcessing_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 handles.ResultSeries = runWaveletProcessing(handles.ResultSeries);
+guidata(hObject,handles);
+updateWindow(handles);
+
+
+% --------------------------------------------------------------------
+function menu_Parametrization_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_Parametrization (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menu_Prediction_Callback(hObject, eventdata, handles)
+% hObject    handle to menu_Prediction (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+
+
+% --------------------------------------------------------------------
+function menuItem_Nonstationarity_Callback(hObject, eventdata, handles)
+% hObject    handle to menuItem_Nonstationarity (see GCBO)
+% eventdata  reserved - to be defined in a future version of MATLAB
+% handles    structure with handles and user data (see GUIDATA)
+handles.ResultSeries = runNonstationarity(handles.ResultSeries);
 guidata(hObject,handles);
 updateWindow(handles);

@@ -71,7 +71,7 @@ function varargout = runWaveletProcessing_OutputFcn(hObject, eventdata, handles)
 % handles    structure with handles and user data (see GUIDATA)
 
 % Get default command line output from handles structure
-varargout{1} = handles.output;
+varargout{1} = handles.series;
 delete(handles.figure1);
 
 % --- Executes on button press in buttonApplyChanges.
@@ -135,11 +135,17 @@ function buttonApplyFilter_Callback(hObject, eventdata, handles)
 % eventdata  reserved - to be defined in a future version of MATLAB
 % handles    structure with handles and user data (see GUIDATA)
 popupContent = cellstr(get(handles.popupFilter,'String'));
-popupNum = get(handles.popupWaveletName,'Value');
+popupNum = get(handles.popupFilter,'Value');
 waveletName=popupContent{popupNum};
-decompositionLevel = str2double(get(handles.editDecompositionLevel,'String'));
+level = str2double(get(handles.editDecompositionLevel,'String'));
 alpha = str2double(get(handles.editAlpha,'String'));
-hardThreshold = get(handles.checkboxThresold,'Value');
+hardThreshold = get(handles.checkboxThreshold,'Value');
+handles.series = WaveletFilter(handles.series,waveletName,level, alpha,1,hardThreshold);
+figure();
+plot(1:length(handles.originalSeries), handles.originalSeries,'k');
+hold on;
+plot(1:length(handles.series), handles.series, 'g');
+guidata(hObject, handles);
 
 % --- Executes on selection change in popupWaveletName.
 function popupWaveletName_Callback(hObject, eventdata, handles)
